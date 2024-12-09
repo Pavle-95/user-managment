@@ -1,7 +1,7 @@
-const User = require('../models/User'); // Import User model
-const Task = require('../models/Task'); // Import Task model (assuming you have a Task model)
-const bcrypt = require('bcrypt'); // For password hashing
-const { Op } = require('sequelize'); // For Sequelize operators
+const User = require('../models/User'); 
+const Task = require('../models/Task'); 
+const bcrypt = require('bcrypt'); 
+const { Op } = require('sequelize');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -39,8 +39,8 @@ const createUser = async (req, res) => {
 
 // Update user information
 const updateUser = async (req, res) => {
-    // const userId = req.params.id; // Get user ID from request parameters
-    const { firstName, lastName, username, email, userId } = req.body;
+    const userId = req.params.id; 
+    const { firstName, lastName, username, email } = req.body;
 
     try {
         const user = await User.findByPk(userId);
@@ -53,7 +53,7 @@ const updateUser = async (req, res) => {
         const existingUser = await User.findOne({
             where: {
                 [Op.or]: [{ username }, { email }],
-                id: { [Op.ne]: userId } // Exclude current user from the check
+                id: { [Op.ne]: userId }
             }
         });
 
@@ -77,15 +77,15 @@ const updateUser = async (req, res) => {
 
 // List tasks for a specific user with pagination and sorting
 const listTasks = async (req, res) => {
-    const userId = req.params.userId; // Get user ID from request parameters
-    const { page = 1, limit = 10, sortOrder = 'DESC' } = req.query; // Pagination and sorting
+    const userId = req.params.userId;
+    const { page = 1, limit = 10, sortOrder = 'DESC' } = req.query;
 
     try {
-        const offset = (page - 1) * limit; // Calculate offset for pagination
+        const offset = (page - 1) * limit;
 
         const tasks = await Task.findAndCountAll({
-            where: { userId }, // Filter by user ID
-            order: [['createdAt', sortOrder]], // Sort by creation date
+            where: { userId }, 
+            order: [['createdAt', sortOrder]], 
             limit,
             offset,
         });
@@ -103,13 +103,13 @@ const listTasks = async (req, res) => {
 
 // Admin can list all tasks with pagination and sorting
 const listAllTasks = async (req, res) => {
-    const { page = 1, limit = 10, sortOrder = 'DESC' } = req.query; // Pagination and sorting
+    const { page = 1, limit = 10, sortOrder = 'DESC' } = req.query; 
 
     try {
-        const offset = (page - 1) * limit; // Calculate offset for pagination
+        const offset = (page - 1) * limit;
 
         const tasks = await Task.findAndCountAll({
-            order: [['createdAt', sortOrder]], // Sort by creation date
+            order: [['createdAt', sortOrder]],
             limit,
             offset,
         });
@@ -127,7 +127,7 @@ const listAllTasks = async (req, res) => {
 
 // Admin can update any user's task
 const updateTaskByAdmin = async (req, res) => {
-    const taskId = req.params.taskId; // Get task ID from request parameters
+    const taskId = req.params.taskId;
 
     try {
         const task = await Task.findByPk(taskId);
@@ -135,10 +135,8 @@ const updateTaskByAdmin = async (req, res) => {
         if (!task) {
             return res.status(404).json({ message: 'Task not found.' });
         }
-
-        // Update task details here...
         
-        await task.save(); // Save changes to the database
+        await task.save();
 
         res.status(200).json(task);
     } catch (error) {
@@ -148,7 +146,7 @@ const updateTaskByAdmin = async (req, res) => {
 
 // Admin can delete any user's task
 const deleteTaskByAdmin = async (req, res) => {
-    const taskId = req.params.taskId; // Get task ID from request parameters
+    const taskId = req.params.taskId; 
 
     try {
         const task = await Task.findByPk(taskId);
@@ -157,9 +155,9 @@ const deleteTaskByAdmin = async (req, res) => {
             return res.status(404).json({ message: 'Task not found.' });
         }
 
-        await task.destroy(); // Delete the task
+        await task.destroy(); 
 
-        res.status(204).send(); // Send no content response
+        res.status(204).send();
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
